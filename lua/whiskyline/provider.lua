@@ -144,6 +144,11 @@ function pd.lsp()
         msg = client[1].name
       end
     end
+
+    if msg ~= '' then
+      msg = ' '
+    end
+
     return '%.40{"' .. msg .. '"}'
   end
 
@@ -155,89 +160,6 @@ function pd.lsp()
 
   if not pd.initialized then
     result.attr = stl_attr('Function')
-    result.attr.bold = true
-  end
-  return result
-end
-
-local function gitsigns_data(type)
-  if not vim.b.gitsigns_status_dict then
-    return ''
-  end
-
-  local val = vim.b.gitsigns_status_dict[type]
-  val = (val == 0 or not val) and '' or tostring(val) .. (type == 'head' and '' or ' ')
-  return val
-end
-
-local function git_icons(type)
-  local tbl = {
-    ['added'] = ' ',
-    ['changed'] = ' ',
-    ['deleted'] = ' ',
-  }
-  return tbl[type]
-end
-
-function pd.gitadd()
-  local result = {
-    stl = function()
-      local res = gitsigns_data('added')
-      return #res > 0 and git_icons('added') .. res or ''
-    end,
-    name = 'gitadd',
-    event = { 'GitSignsUpdate' },
-  }
-  if not pd.initialized then
-    result.attr = stl_attr('DiffAdd')
-  end
-  return result
-end
-
-function pd.gitchange()
-  local result = {
-    stl = function()
-      local res = gitsigns_data('changed')
-      return #res > 0 and git_icons('changed') .. res or ''
-    end,
-    name = 'gitchange',
-    event = { 'GitSignsUpdate' },
-  }
-
-  if not pd.initialized then
-    result.attr = stl_attr('DiffChange')
-  end
-  return result
-end
-
-function pd.gitdelete()
-  local result = {
-    stl = function()
-      local res = gitsigns_data('removed')
-      return #res > 0 and git_icons('deleted') .. res or ''
-    end,
-    name = 'gitdelete',
-    event = { 'GitSignsUpdate' },
-  }
-
-  if not pd.initialized then
-    result.attr = stl_attr('DiffDelete')
-  end
-  return result
-end
-
-function pd.branch()
-  local result = {
-    stl = function()
-      local icon = ' '
-      local res = gitsigns_data('head')
-      return #res > 0 and icon .. res or 'UNKOWN'
-    end,
-    name = 'gitbranch',
-    event = { 'GitSignsUpdate' },
-  }
-  if not pd.initialized then
-    result.attr = stl_attr('Include')
     result.attr.bold = true
   end
   return result

@@ -53,12 +53,12 @@ local function default()
     s.r_right,
     s.sep,
     --
-    s.r_left,
-    p.gitadd,
-    p.gitchange,
-    p.gitdelete,
-    p.branch,
-    s.r_right,
+    -- s.r_left,
+    -- p.gitadd,
+    -- p.gitchange,
+    -- p.gitdelete,
+    -- p.branch,
+    -- s.r_right,
     --
     s.sep,
     --
