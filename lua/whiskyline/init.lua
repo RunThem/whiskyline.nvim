@@ -13,6 +13,7 @@ local function default()
   local p = require('whiskyline.provider')
   local s = require('whiskyline.separator')
   return {
+    s.sk,
     --
     s.l_left,
     p.mode,
@@ -59,6 +60,8 @@ local function default()
     s.r_left,
     p.encoding,
     s.r_right,
+    --
+    s.sk,
   }
 end
 
