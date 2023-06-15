@@ -116,7 +116,7 @@ local stl_render = co.create(function(event)
 end)
 
 function whk.setup(opt)
-  opt = opt or { bg = '#01394a' }
+  opt = opt or { bg = '#202328' }
   whk.bg = opt.bg
   whk.elements = default()
 
