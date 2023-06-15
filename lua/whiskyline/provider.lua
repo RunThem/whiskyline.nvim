@@ -16,62 +16,33 @@ local function stl_attr(group, trans)
   }
 end
 
-local function alias_mode()
-  return {
-    ['n'] = 'Normal',
-    ['no'] = 'O-Pending',
-    ['nov'] = 'O-Pending',
-    ['noV'] = 'O-Pending',
-    ['no\x16'] = 'O-Pending',
-    ['niI'] = 'Normal',
-    ['niR'] = 'Normal',
-    ['niV'] = 'Normal',
-    ['nt'] = 'Normal',
-    ['ntT'] = 'Normal',
-    ['v'] = 'Visual',
-    ['vs'] = 'Visual',
-    ['V'] = 'V-Line',
-    ['Vs'] = 'V-Line',
-    ['\x16'] = 'V-Block',
-    ['\x16s'] = 'V-Block',
-    ['s'] = 'Select',
-    ['S'] = 'S-Line',
-    ['\x13'] = 'S-Block',
-    ['i'] = 'Insert',
-    ['ic'] = 'Insert',
-    ['ix'] = 'Insert',
-    ['R'] = 'Replace',
-    ['Rc'] = 'Replace',
-    ['Rx'] = 'Replace',
-    ['Rv'] = 'V-Replace',
-    ['Rvc'] = 'V-Replace',
-    ['Rvx'] = 'V-Replace',
-    ['c'] = 'Command',
-    ['cv'] = 'Ex',
-    ['ce'] = 'Ex',
-    ['r'] = 'Replace',
-    ['rm'] = 'More',
-    ['r?'] = 'Confirm',
-    ['!'] = 'Shell',
-    ['t'] = 'Terminal',
-  }
-end
-
 function pd.mode()
-  local alias = alias_mode()
   local result = {
     stl = function()
-      local mode = api.nvim_get_mode().mode
-      return alias[mode] or alias[string.sub(mode, 1, 1)] or 'UNK'
+      return '   '
     end,
     name = 'mode',
     event = { 'ModeChanged', 'BufEnter' },
-  }
+    attr = {
+      fn = function()
+        local colors = {
+          ['n'] = '#ec5f67',
+          ['no'] = '#51afef',
+          ['v'] = '#51afef',
+          ['V'] = '#51afef',
+          ['i'] = '#98be65',
+          ['\x16'] = '#51afef',
+        }
 
-  if not pd.initialized then
-    result.attr = stl_attr('@keyword')
-    result.attr.bold = true
-  end
+        local mode = api.nvim_get_mode().mode
+
+        return {
+          bg = 'NONE',
+          fg = colors[mode] or colors[1],
+        }
+      end,
+    },
+  }
 
   return result
 end

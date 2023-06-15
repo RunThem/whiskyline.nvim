@@ -6,7 +6,11 @@ local function stl_format(name, val)
 end
 
 local function stl_hl(name, attr)
-  api.nvim_set_hl(0, 'Whisky' .. name, attr)
+  if attr.fn then
+    api.nvim_set_hl(0, 'Whisky' .. name, attr.fn())
+  else
+    api.nvim_set_hl(0, 'Whisky' .. name, attr)
+  end
 end
 
 local function default()
