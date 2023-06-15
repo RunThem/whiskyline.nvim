@@ -169,7 +169,7 @@ end
 
 function pd.encoding()
   return {
-    stl = '%{&fileencoding?&fileencoding:&encoding}',
+    stl = '%{&fileencoding?&fileencoding:&encoding} %{&fileformat}',
     name = 'filencode',
     event = { 'BufEnter' },
     attr = stl_attr('Type'),
