@@ -1,25 +1,15 @@
 local api, uv = vim.api, vim.uv
 local pd = {}
 
-pd.initialized = false
-
-function pd.stl_bg()
-  return require('whiskyline').bg
-end
-
-local function stl_attr(group, trans)
+local function stl_attr(group)
   local color = api.nvim_get_hl_by_name(group, true)
-  trans = trans or false
-  return {
-    bg = trans and 'NONE' or pd.stl_bg(),
-    fg = color.foreground,
-  }
+  return { fg = color.foreground }
 end
 
 function pd.mode()
   local result = {
     stl = function()
-      return '   '
+      return ' '
     end,
     name = 'mode',
     event = { 'ModeChanged', 'BufEnter' },
@@ -37,7 +27,6 @@ function pd.mode()
         local mode = api.nvim_get_mode().mode
 
         return {
-          bg = 'NONE',
           fg = colors[mode] or colors[1],
         }
       end,
@@ -88,6 +77,9 @@ function pd.filesize()
     stl = stl_size,
     name = 'filesize',
     event = { 'BufEnter' },
+    attr = {
+      fg = 'NONE',
+    },
   }
 end
 
@@ -104,7 +96,6 @@ function pd.fileicon()
     name = 'fileicon',
     event = { 'BufEnter' },
     attr = {
-      bg = pd.stl_bg(),
       fg = color,
     },
   }
@@ -122,17 +113,13 @@ function pd.fileinfo()
     end
     return fname .. '%m'
   end
-  local result = {
+
+  return {
     stl = stl_file,
     name = 'fileinfo',
     event = { 'BufEnter' },
+    attr = stl_attr('Comment'),
   }
-
-  if not pd.initialized then
-    result.attr = stl_attr('Normal')
-  end
-
-  return result
 end
 
 function pd.lsp()
@@ -152,17 +139,12 @@ function pd.lsp()
     return '%.40{"' .. msg .. '"}'
   end
 
-  local result = {
+  return {
     stl = lsp_stl,
     name = 'Lsp',
     event = { 'LspProgress', 'LspAttach', 'LspDetach' },
+    attr = stl_attr('Function'),
   }
-
-  if not pd.initialized then
-    result.attr = stl_attr('Function')
-    result.attr.bold = true
-  end
-  return result
 end
 
 function pd.pad()
@@ -170,23 +152,28 @@ function pd.pad()
     stl = '%=',
     name = 'pad',
     attr = {
-      background = 'NONE',
-      foreground = 'NONE',
+      bg = 'NONE',
+      fg = 'NONE',
     },
   }
 end
 
 function pd.lnumcol()
-  local result = {
+  return {
     stl = '%-4.(%l:%c%) %P',
     name = 'linecol',
     event = { 'CursorHold' },
+    attr = stl_attr('Label'),
   }
+end
 
-  if not pd.initialized then
-    result.attr = stl_attr('Label')
-  end
-  return result
+function pd.encoding()
+  return {
+    stl = '%{&fileencoding?&fileencoding:&encoding}',
+    name = 'filencode',
+    event = { 'BufEnter' },
+    attr = stl_attr('Type'),
+  }
 end
 
 local function get_diag_sign(type)
@@ -202,77 +189,54 @@ local function diagnostic_info(severity)
   if vim.diagnostic.is_disabled(0) then
     return ''
   end
+
   local tbl = { 'Error', 'Warn', 'Info', 'Hint' }
   local count = #vim.diagnostic.get(0, { severity = severity })
   return count == 0 and '' or get_diag_sign(tbl[severity]) .. tostring(count) .. ' '
 end
 
 function pd.diagError()
-  local result = {
+  return {
     stl = function()
       return diagnostic_info(1)
     end,
     name = 'diagError',
     event = { 'DiagnosticChanged', 'BufEnter' },
+    attr = stl_attr('DiagnosticError'),
   }
-  if not pd.initialized then
-    result.attr = stl_attr('DiagnosticError', true)
-  end
-  return result
 end
 
 function pd.diagWarn()
-  local result = {
+  return {
     stl = function()
       return diagnostic_info(2)
     end,
     name = 'diagWarn',
     event = { 'DiagnosticChanged', 'BufEnter' },
+    attr = stl_attr('DiagnosticWarn'),
   }
-  if not pd.initialized then
-    result.attr = stl_attr('DiagnosticWarn', true)
-  end
-  return result
 end
 
 function pd.diagInfo()
-  local result = {
+  return {
     stl = function()
       return diagnostic_info(3)
     end,
     name = 'diaginfo',
     event = { 'DiagnosticChanged', 'BufEnter' },
+    attr = stl_attr('DiagnosticInfo'),
   }
-  if not pd.initialized then
-    result.attr = stl_attr('DiagnosticInfo', true)
-  end
-  return result
 end
 
 function pd.diagHint()
-  local result = {
+  return {
     stl = function()
       return diagnostic_info(4)
     end,
     name = 'diaghint',
     event = { 'DiagnosticChanged', 'BufEnter' },
+    attr = stl_attr('DiagnosticHint'),
   }
-  if not pd.initialized then
-    result.attr = stl_attr('DiagnosticHint', true)
-  end
-  return result
-end
-
-function pd.encoding()
-  local result = {
-    stl = '%{&fileencoding?&fileencoding:&encoding}',
-    name = 'filencode',
-    event = { 'BufEnter' },
-  }
-  if not pd.initialized then
-    result.attr = stl_attr('Type')
-  end
-  return result
 end
 
 return pd

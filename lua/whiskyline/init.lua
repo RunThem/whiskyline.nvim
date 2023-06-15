@@ -7,65 +7,58 @@ end
 
 local function stl_hl(name, attr)
   if attr.fn then
-    api.nvim_set_hl(0, 'Whisky' .. name, attr.fn())
-  else
-    api.nvim_set_hl(0, 'Whisky' .. name, attr)
+    attr = attr.fn()
   end
+
+  if name ~= 'sk' then
+    attr.bg = whk.bg
+  end
+
+  api.nvim_set_hl(0, 'Whisky' .. name, attr)
 end
 
 local function default()
   local p = require('whiskyline.provider')
   local s = require('whiskyline.separator')
+
+  local S = s.sep
+
   return {
     s.sk,
-    --
-    s.l_left,
+    S,
+
+    S,
     p.mode,
-    s.l_right,
-    --
-    s.sep,
-    --
-    s.l_left,
+    S,
+
+    S,
     p.filesize,
     p.fileicon,
     p.fileinfo,
-    s.l_right,
-    --
-    s.sep,
-    --
-    s.l_left,
-    p.lnumcol,
-    s.l_right,
-    --
-    s.sep,
-    --
+    S,
+
+    S,
     p.pad,
     p.diagError,
     p.diagWarn,
     p.diagInfo,
     p.diagHint,
     p.pad,
-    --
-    s.sep,
-    --
-    s.r_left,
+    S,
+
+    S,
     p.lsp,
-    s.r_right,
-    s.sep,
-    --
-    -- s.r_left,
-    -- p.gitadd,
-    -- p.gitchange,
-    -- p.gitdelete,
-    -- p.branch,
-    -- s.r_right,
-    --
-    s.sep,
-    --
-    s.r_left,
+    S,
+
+    S,
+    p.lnumcol,
+    S,
+
+    S,
     p.encoding,
-    s.r_right,
-    --
+    S,
+
+    S,
     s.sk,
   }
 end
@@ -94,6 +87,7 @@ local function whk_init(event, pieces)
       stl = res.stl,
     }
   end
+
   require('whiskyline.provider').initialized = true
   return table.concat(pieces, '')
 end
@@ -115,6 +109,7 @@ local stl_render = co.create(function(event)
         end
       end
     end
+
     vim.opt.stl = table.concat(pieces)
     event = co.yield()
   end
@@ -143,6 +138,7 @@ function whk.setup(opt)
     'LspAttach',
     'LspDetach',
   }
+
   api.nvim_create_autocmd(events, {
     callback = function(arg)
       vim.schedule(function()
