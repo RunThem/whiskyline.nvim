@@ -64,6 +64,33 @@ local function init_devicon()
   resolve = devicon
 end
 
+function pd.filesize()
+  local stl_size = function()
+    local size = vim.fn.getfsize(api.nvim_buf_get_name(0))
+
+    if size == 0 or size == -1 or size == -2 then
+      return ''
+    end
+
+    if size < 1024 then
+      size = size .. 'b'
+    elseif size < 1024 * 1024 then
+      size = string.format('%.1f', size / 1024) .. 'k'
+    elseif size < 1024 * 1024 * 1024 then
+      size = string.format('%.1f', size / 1024 / 1024) .. 'm'
+    else
+      size = string.format('%.1f', size / 1024 / 1024 / 1024) .. 'g'
+    end
+    return size .. ' '
+  end
+
+  return {
+    stl = stl_size,
+    name = 'filesize',
+    event = { 'BufEnter' },
+  }
+end
+
 function pd.fileicon()
   if not resolve then
     init_devicon()
