@@ -134,6 +134,8 @@ function pd.lsp()
 
     if msg ~= '' then
       msg = ' '
+    else
+      msg = '  '
     end
 
     return '%.40{"' .. msg .. '"}'
@@ -185,57 +187,53 @@ local function get_diag_sign(type)
   end
 end
 
-local function diagnostic_info(severity)
-  if vim.diagnostic.is_disabled(0) then
-    return ''
+function pd.diag()
+  local i
+  local count
+  local tbl = { 'Error', 'Warn', 'Info', 'Hint' }
+
+  local function diag_has()
+    for i = 1, 4 do
+      local count = #vim.diagnostic.get(0, { severity = i })
+      if count ~= 0 then
+        return i
+      end
+    end
+
+    return 0
   end
 
-  local tbl = { 'Error', 'Warn', 'Info', 'Hint' }
-  local count = #vim.diagnostic.get(0, { severity = severity })
-  return count == 0 and '' or get_diag_sign(tbl[severity]) .. tostring(count) .. ' '
-end
+  local function diag_stl()
+    if vim.diagnostic.is_disabled(0) then
+      return '  '
+    end
 
-function pd.diagError()
-  return {
-    stl = function()
-      return diagnostic_info(1)
-    end,
-    name = 'diagError',
-    event = { 'DiagnosticChanged', 'BufEnter' },
-    attr = stl_attr('DiagnosticError'),
-  }
-end
+    local tbl = { 'Error', 'Warn', 'Info', 'Hint' }
+    local idx = diag_has()
 
-function pd.diagWarn()
-  return {
-    stl = function()
-      return diagnostic_info(2)
-    end,
-    name = 'diagWarn',
-    event = { 'DiagnosticChanged', 'BufEnter' },
-    attr = stl_attr('DiagnosticWarn'),
-  }
-end
+    return idx == 0 and '  ' or get_diag_sign(tbl[idx])
+  end
 
-function pd.diagInfo()
-  return {
-    stl = function()
-      return diagnostic_info(3)
-    end,
-    name = 'diaginfo',
-    event = { 'DiagnosticChanged', 'BufEnter' },
-    attr = stl_attr('DiagnosticInfo'),
-  }
-end
+  local function diag_attr()
+    if vim.diagnostic.is_disabled(0) then
+      return '  '
+    end
 
-function pd.diagHint()
+    local tbl = { 'DiagnosticError', 'DiagnosticWarn', 'DiagnosticInfo', 'DiagnosticHint' }
+    local idx = diag_has()
+
+    if idx == 0 then
+      return { fg = 'NONE' }
+    end
+
+    return stl_attr(tbl[idx])
+  end
+
   return {
-    stl = function()
-      return diagnostic_info(4)
-    end,
-    name = 'diaghint',
+    stl = diag_stl,
+    name = 'diag',
     event = { 'DiagnosticChanged', 'BufEnter' },
-    attr = stl_attr('DiagnosticHint'),
+    attr = diag_attr(),
   }
 end
 

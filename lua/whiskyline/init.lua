@@ -32,23 +32,20 @@ local function default()
     S,
 
     S,
+    p.lsp,
+    S,
+
+    S,
+    p.diag,
+    S,
+
+    S,
     p.filesize,
     p.fileicon,
     p.fileinfo,
     S,
 
-    S,
     p.pad,
-    p.diagError,
-    p.diagWarn,
-    p.diagInfo,
-    p.diagHint,
-    p.pad,
-    S,
-
-    S,
-    p.lsp,
-    S,
 
     S,
     p.lnumcol,
@@ -119,15 +116,6 @@ function whk.setup(opt)
   opt = opt or { bg = '#202328' }
   whk.bg = opt.bg
   whk.elements = default()
-
-  api.nvim_create_autocmd({ 'User' }, {
-    pattern = 'GitSignsUpdate',
-    callback = function(arg)
-      vim.schedule(function()
-        co.resume(stl_render, arg.match)
-      end)
-    end,
-  })
 
   local events = {
     'LspProgress',

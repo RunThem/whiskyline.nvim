@@ -6,8 +6,8 @@ function sp.sk()
     stl = ' ',
     name = 'sk',
     attr = {
-      background = '#51afef',
-      foreground = 'NONE',
+      bg = '#51afef',
+      fg = 'NONE',
     },
   }
 end
