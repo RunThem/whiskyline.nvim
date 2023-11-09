@@ -6,11 +6,31 @@ local function stl_attr(group)
   return { fg = color.foreground }
 end
 
+function pd.sk()
+  return {
+    stl = ' ',
+    name = 'sk',
+    attr = {
+      bg = '#51afef',
+      fg = 'NONE',
+    },
+  }
+end
+
+function pd.sep()
+  return {
+    stl = ' ',
+    name = 'sep',
+    attr = {
+      bg = 'NONE',
+      fg = 'NONE',
+    },
+  }
+end
+
 function pd.mode()
-  local result = {
-    stl = function()
-      return ' '
-    end,
+  return {
+    stl = '',
     name = 'mode',
     event = { 'ModeChanged', 'BufEnter' },
     attr = {
@@ -32,8 +52,6 @@ function pd.mode()
       end,
     },
   }
-
-  return result
 end
 
 local function path_sep()
@@ -89,6 +107,7 @@ function pd.fileicon()
   end
 
   local icon, color = resolve.get_icon_color_by_filetype(vim.bo.filetype, { default = true })
+
   return {
     stl = function()
       return icon .. ' '
@@ -123,19 +142,21 @@ function pd.fileinfo()
 end
 
 function pd.lsp()
-  local function lsp_stl(event)
-    local msg = vim.lsp.status()
-    if (#msg == 0 or not msg:find('^%d')) and event ~= 'LspDetach' then
-      local client = vim.lsp.get_active_clients({ bufnr = 0 })
-      if #client ~= 0 then
-        msg = client[1].name
-      end
-    end
+  local function lsp_stl(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    local msg = ''
 
-    if msg ~= '' then
-      msg = ' '
-    else
-      msg = '  '
+    if args.event == 'LspProgress' then
+      local val = args.data.result.value
+      if val.percentage then
+        val.percentage = val.percentage .. '%' .. (string.len(val.percentage) == 1 and ' ' or '')
+      else
+        val.percentage = '   '
+      end
+
+      msg = ' ' .. val.percentage
+    elseif args.event == 'LspDetach' then
+      msg = '   '
     end
 
     return '%.40{"' .. msg .. '"}'
