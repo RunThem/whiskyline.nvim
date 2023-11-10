@@ -143,20 +143,26 @@ end
 
 function pd.lsp()
   local function lsp_stl(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
     local msg = ''
-
     if args.event == 'LspProgress' then
       local val = args.data.result.value
+
       if val.percentage then
-        val.percentage = val.percentage .. '%' .. (string.len(val.percentage) == 1 and ' ' or '')
-      else
-        val.percentage = '   '
+        msg = val.percentage .. '%'
+
+        if val.percentage < 10 then
+          msg = msg .. '  '
+        elseif val.percentage < 100 then
+          msg = msg .. ' '
+        else
+        end
       end
 
-      msg = ' ' .. val.percentage
+      if val.kind == 'end' then
+        msg = '   '
+      end
     elseif args.event == 'LspDetach' then
-      msg = '   '
+      msg = '    '
     end
 
     return '%.40{"' .. msg .. '"}'
