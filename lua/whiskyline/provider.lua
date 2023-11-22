@@ -260,7 +260,7 @@ function pd.diag()
     stl = diag_stl,
     name = 'diag',
     event = { 'DiagnosticChanged', 'BufEnter' },
-    attr = diag_attr(),
+    attr = { fn = diag_attr },
   }
 end
 
